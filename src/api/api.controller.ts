@@ -1,17 +1,14 @@
-import { Controller, Get } from "@nestjs/common";
-import { BackupProfilesCron } from "src/crons/backup-profiles.cron";
-import { ArkMap } from "src/nitrado/common/constants";
-import { NitradoFtpService } from "src/nitrado/services/nitrado-ftp.service";
+import { Controller, Post } from "@nestjs/common";
+import { RunArkBackupUseCase } from "src/game-server/application/use-cases/run-ark-backup.use-case";
 
 @Controller('/api')
 export class ApiController {
-    constructor(private readonly backupProfilesCron: BackupProfilesCron) {}
+    constructor(
+        private readonly runArkBackupsUseCase: RunArkBackupUseCase,
+    ) {}
 
-    @Get('backup-profiles')
+    @Post('backup-profiles')
     async backupProfiles() {
-        const result = await this.backupProfilesCron.backupProfiles();
-        return {
-            files: result,
-        }
+        await this.runArkBackupsUseCase.execute();
     }
 }

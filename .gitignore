@@ -38,3 +38,5 @@ LocalBackups/
 
 .env.development
 .env.production
+
+src/game-server/infrastructure/configurations/**/*.configuration.ts

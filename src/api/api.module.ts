@@ -1,10 +1,9 @@
 import { Module } from "@nestjs/common";
 import { ApiController } from "./api.controller";
-import { NitradoModule } from "src/nitrado/nitrado.module";
-import { CronsModule } from "src/crons/crons.module";
+import { GameServerModule } from "src/game-server/game-server.module";
 
 @Module({
-    imports: [NitradoModule, CronsModule],
+    imports: [GameServerModule],
     controllers: [ApiController],
     providers: [],
     exports: [],

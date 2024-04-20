@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { AppFileBuffer } from "./common/types/app-file.interface";
+import { AppFileBuffer } from "../common/types/app-file.interface";
 import * as fs from "fs";
 import { AppLogger } from "src/logger";
 import { ConfigService } from "@nestjs/config";
@@ -11,15 +11,10 @@ export class FileStorageService {
         private readonly configService: ConfigService,
     ) {}
 
-    async saveArkBackupFile(file: AppFileBuffer, backupFolder: string) {
+    async saveFileBufferToFile(file: AppFileBuffer, backupFolder: string) {
         this.logger.log(`Saving file: ${file.name}`, 'FileStorageService')
 
-        // Check if the backup folder exists
-        const basePath = this.configService.get('ARK_BACKUPS_PATH');
-        if (!basePath) {
-            throw new Error('ARK_BACKUPS_PATH is not defined');
-        }
-        const destinationFolder = `${basePath}/${backupFolder}`;
+        const destinationFolder = `${backupFolder}`;
         if (!fs.existsSync(destinationFolder)) {
             fs.mkdirSync(destinationFolder, { recursive: true });
         }
