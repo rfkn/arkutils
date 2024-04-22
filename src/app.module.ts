@@ -4,6 +4,7 @@ import { AppLogger } from './logger';
 import { ApiModule } from './api/api.module';
 import { FileStorageModule } from './file-storage/file-storage.module';
 import { GameServerModule } from './game-server/game-server.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { GameServerModule } from './game-server/game-server.module';
       envFilePath: `src/env/.env.${process.env.NODE_ENV}`,
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     ApiModule,
     FileStorageModule,
     GameServerModule,

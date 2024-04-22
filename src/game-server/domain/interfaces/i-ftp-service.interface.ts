@@ -11,6 +11,7 @@ export interface FtpConnectionProps {
 export interface IFtpService {
     connect(connectionDetails: FtpConnectionProps): Promise<void>;
     reconnect(connectionDetails: FtpConnectionProps): Promise<void>;
+    recover(): Promise<void>;
     disconnect(): Promise<void>;
     isConnected(): boolean;
     listFiles(path: string): Promise<ftp.FileInfo[]>;

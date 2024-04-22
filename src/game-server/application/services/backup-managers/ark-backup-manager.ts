@@ -17,8 +17,39 @@ export class ArkAscendedBackupManager implements IGameBackupManager<ArkMapConfig
         ftpService: IFtpService,
         config: ArkMapConfiguration,
         backupsDestinationDir: string,
+        maxRetries: number = 3
     ): Promise<void> {
-        const timestamp = new Date().toISOString();
+        const timestamp = new Date().toISOString().replaceAll(':', '.').replace('T', '_');
+        try {
+            await this.tryBackup(ftpService, config, backupsDestinationDir, timestamp);
+        } catch (e) {
+            this.logger.error(
+                `Error running backup for server ${config.serverName}: ${e.message}`,
+                e.stack,
+                'ArkAscendedBackupManager.main'
+            );
+            this.logger.log('retries left: ' + maxRetries, 'ArkAscendedBackupManager.main');
+            await this.fileStorageService.deleteFolder(`${backupsDestinationDir}/${config.mapFolderName}/${timestamp}`);
+            if (maxRetries > 0) {
+                maxRetries--;
+                this.logger.log(`Retrying backup for server ${config.serverName}...`, 'ArkAscendedBackupManager.main');
+                await ftpService.recover();
+                await this.runBackup(ftpService, config, backupsDestinationDir, maxRetries);
+            } else {
+                this.logger.error(
+                    `Backup for server ${config.serverName} failed`,
+                    'ArkAscendedBackupManager.main'
+                );
+            }
+        }
+    }
+
+    async tryBackup(
+        ftpService: IFtpService,
+        config: ArkMapConfiguration,
+        backupsDestinationDir: string,
+        timestamp: string,
+    ): Promise<void> {
         const start = Date.now();
         const {
             serverName,
@@ -42,27 +73,30 @@ export class ArkAscendedBackupManager implements IGameBackupManager<ArkMapConfig
             `${config.baseSavePath}/${mapFolderName}/`
         )).filter(file => file.name.match('.ark\.gz'));
 
-        const mostRecentBackup = this.getMostRecentFile(backupsList);
+        try {
+            const mostRecentBackup = this.getMostRecentFile(backupsList);
 
-        this.logger.log(
-            `Downloading most recent backup: ${
-                mostRecentBackup.name
-            }...`,
-            'ArkAscendedBackupManager.runBackup'
-        );
-        await this.downloadFile(
-            ftpService,
-            config,
-            mostRecentBackup,
-            backupsDestinationDir,
-            timestamp
-        );
-        this.logger.log(
-            `Most recent backup downloaded: ${
-                mostRecentBackup.name
-            }`,
-            'ArkAscendedBackupManager.runBackup'
-        );
+            this.logger.log(
+                `Downloading most recent backup: ${
+                    mostRecentBackup.name
+                }...`,
+                'ArkAscendedBackupManager.runBackup'
+            );
+        
+            await this.downloadFile(
+                ftpService,
+                config,
+                mostRecentBackup,
+                backupsDestinationDir,
+                timestamp
+            );
+            this.logger.log(
+                `Most recent backup downloaded: ${
+                    mostRecentBackup.name
+                }`,
+                'ArkAscendedBackupManager.runBackup'
+            );
+        } catch (e) {}
 
         this.logger.log(
             `Downloading current game state file...`,

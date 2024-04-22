@@ -35,6 +35,14 @@ export class FtpClient implements IFtpService {
         await this.connect(connectionDetails);
     }
 
+    async recover(): Promise<void> {
+        if (!this.client.closed) {
+            return;
+        }
+        this.logger.log('Recovering connection to FTP server...', 'FtpClient.recover');
+        await this.client.access();
+    }
+
     async disconnect(): Promise<void> {
         if (this.client.closed) {
             this.logger.log('FTP client already disconnected', 'FtpClient.disconnect');
