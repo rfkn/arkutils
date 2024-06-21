@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { FileStorageService } from "src/file-storage/file-storage.service";
-import { AppLogger } from "src/logger";
+import { Injectable } from '@nestjs/common';
+import { FileStorageService } from 'src/file-storage/file-storage.service';
+import { AppLogger } from 'src/logger';
 
 @Injectable()
 export class BackupsRotationService {
@@ -20,7 +20,8 @@ export class BackupsRotationService {
         backupsDir: string,
         filePattern?: RegExp,
     ) {
-        const allFolders = await this.fileStorageService.listDirsInFolder(backupsDir);
+        const allFolders =
+            await this.fileStorageService.listDirsInFolder(backupsDir);
         const folders = this.getOnlyDateFolders(allFolders);
 
         // folder name format: 2024-04-21_03.02.11.921Z
@@ -33,10 +34,8 @@ export class BackupsRotationService {
             if (folderDate < cutoff) {
                 if (filePattern) {
                     this.logger.log(
-                        `Deleting files in folder: ${folder} matching pattern: ${
-                            filePattern
-                        }`,
-                        'BackupsRotationService.deleteBackupsOlderThan'
+                        `Deleting files in folder: ${folder} matching pattern: ${filePattern}`,
+                        'BackupsRotationService.deleteBackupsOlderThan',
                     );
                     await this.fileStorageService.deleteFilesMatchingPattern(
                         `${backupsDir}/${folder}`,
@@ -45,9 +44,11 @@ export class BackupsRotationService {
                 } else {
                     this.logger.log(
                         `Deleting folder: ${folder}`,
-                        'BackupsRotationService.deleteBackupsOlderThan'
+                        'BackupsRotationService.deleteBackupsOlderThan',
                     );
-                    await this.fileStorageService.deleteFolder(`${backupsDir}/${folder}`);
+                    await this.fileStorageService.deleteFolder(
+                        `${backupsDir}/${folder}`,
+                    );
                 }
             }
         }
@@ -57,7 +58,8 @@ export class BackupsRotationService {
         fromBackupsDir: string,
         destinationDir: string,
     ) {
-        const allFolders = await this.fileStorageService.listDirsInFolder(fromBackupsDir);
+        const allFolders =
+            await this.fileStorageService.listDirsInFolder(fromBackupsDir);
         const folders = this.getOnlyDateFolders(allFolders);
 
         const latestFolder = folders.reduce((latest, current) => {
@@ -69,7 +71,10 @@ export class BackupsRotationService {
             return current;
         }, folders[0]);
 
-        this.logger.log(`Copying latest backup ${latestFolder} to folder: ${destinationDir}`, 'BackupsRotationService.copyLatestBackupToFolder');
+        this.logger.log(
+            `Copying latest backup ${latestFolder} to folder: ${destinationDir}`,
+            'BackupsRotationService.copyLatestBackupToFolder',
+        );
 
         await this.fileStorageService.copyFolder(
             `${fromBackupsDir}/${latestFolder}`,
@@ -79,14 +84,20 @@ export class BackupsRotationService {
 
     private folderDateToIsoString(folder: string): string {
         // folder name format: 2024-04-21_03.02.11.921Z
-        const folderDate = folder.replace('_', 'T').replace('.', ':').replace('.', ':');
+        const folderDate = folder
+            .replace('_', 'T')
+            .replace('.', ':')
+            .replace('.', ':');
         return folderDate;
     }
 
     private getOnlyDateFolders(folders: string[]): string[] {
         // folder name format: 2024-04-21_03.02.11.921Z
-        const dateFolderRegex = /^\d{4}-\d{2}-\d{2}_\d{2}\.\d{2}\.\d{2}\.\d{3}Z$/;
-        const dateFolders = folders.filter(folder => dateFolderRegex.test(folder));
+        const dateFolderRegex =
+            /^\d{4}-\d{2}-\d{2}_\d{2}\.\d{2}\.\d{2}\.\d{3}Z$/;
+        const dateFolders = folders.filter((folder) =>
+            dateFolderRegex.test(folder),
+        );
         return dateFolders;
     }
 }

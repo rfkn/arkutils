@@ -15,7 +15,10 @@ export interface IFtpService {
     disconnect(): Promise<void>;
     isConnected(): boolean;
     listFiles(path: string): Promise<ftp.FileInfo[]>;
-    downloadFileToBuffer(fileName: string, destinationPath: string): Promise<AppFileBuffer>;
+    downloadFileToBuffer(
+        fileName: string,
+        destinationPath: string,
+    ): Promise<AppFileBuffer>;
     uploadFile(path: string, buffer: AppFileBuffer): Promise<void>;
     deleteFile(path: string): Promise<void>;
 }

@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { AppLogger } from "src/logger";
-import { Cron } from "@nestjs/schedule";
-import { RunArkBackupUseCase } from "src/game-server/application/use-cases/run-ark-backup.use-case";
+import { Injectable } from '@nestjs/common';
+import { AppLogger } from 'src/logger';
+import { Cron } from '@nestjs/schedule';
+import { RunArkBackupUseCase } from 'src/game-server/application/use-cases/run-ark-backup.use-case';
 
 @Injectable()
 export class BackupCron {
@@ -10,7 +10,7 @@ export class BackupCron {
         private readonly runArkBackupsUseCase: RunArkBackupUseCase,
     ) {}
 
-    @Cron('*/2 * * * *')
+    @Cron('2-59/15 * * * *')
     async handleCron() {
         this.logger.log('Running BackupCron', 'BackupCron');
         try {
@@ -19,7 +19,7 @@ export class BackupCron {
             this.logger.error(
                 `Error running backups: ${e.message}`,
                 e.stack,
-                'BackupCron'
+                'BackupCron',
             );
         }
         this.logger.log('Finished running BackupCron', 'BackupCron');

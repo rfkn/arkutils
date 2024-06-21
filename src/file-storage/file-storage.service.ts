@@ -1,16 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import { AppFileBuffer } from "../common/types/app-file.interface";
-import * as fs from "fs";
-import { AppLogger } from "src/logger";
+import { Injectable } from '@nestjs/common';
+import { AppFileBuffer } from '../common/types/app-file.interface';
+import * as fs from 'fs';
+import { AppLogger } from 'src/logger';
 
 @Injectable()
 export class FileStorageService {
-    constructor(
-        private readonly logger: AppLogger,
-    ) {}
+    constructor(private readonly logger: AppLogger) {}
 
     async saveFileBufferToFile(file: AppFileBuffer, backupFolder: string) {
-        this.logger.log(`Saving file: ${file.name}`, 'FileStorageService')
+        this.logger.log(`Saving file: ${file.name}`, 'FileStorageService');
 
         const destinationFolder = `${backupFolder}`;
         if (!fs.existsSync(destinationFolder)) {
@@ -28,25 +26,36 @@ export class FileStorageService {
     }
 
     async listDirsInFolder(folderPath: string): Promise<string[]> {
-        return fs.readdirSync(folderPath, { withFileTypes: true })
-            .filter(dirent => dirent.isDirectory())
-            .map(dirent => dirent.name);
+        return fs
+            .readdirSync(folderPath, { withFileTypes: true })
+            .filter((dirent) => dirent.isDirectory())
+            .map((dirent) => dirent.name);
     }
 
     async listFilesInFolder(folderPath: string): Promise<string[]> {
-        return fs.readdirSync(folderPath, { withFileTypes: true })
-            .filter(dirent => dirent.isFile())
-            .map(dirent => dirent.name);
+        return fs
+            .readdirSync(folderPath, { withFileTypes: true })
+            .filter((dirent) => dirent.isFile())
+            .map((dirent) => dirent.name);
     }
 
     async copyFolder(source: string, destination: string): Promise<void> {
-        this.logger.log(`Copying folder: ${source} to ${destination}`, 'FileStorageService');
+        this.logger.log(
+            `Copying folder: ${source} to ${destination}`,
+            'FileStorageService',
+        );
         fs.mkdirSync(destination, { recursive: true });
-        fs.readdirSync(source, { withFileTypes: true }).forEach(dirent => {
+        fs.readdirSync(source, { withFileTypes: true }).forEach((dirent) => {
             if (dirent.isDirectory()) {
-                this.copyFolder(`${source}/${dirent.name}`, `${destination}/${dirent.name}`);
+                this.copyFolder(
+                    `${source}/${dirent.name}`,
+                    `${destination}/${dirent.name}`,
+                );
             } else {
-                fs.copyFileSync(`${source}/${dirent.name}`, `${destination}/${dirent.name}`);
+                fs.copyFileSync(
+                    `${source}/${dirent.name}`,
+                    `${destination}/${dirent.name}`,
+                );
             }
         });
     }
@@ -56,9 +65,12 @@ export class FileStorageService {
         fs.rmdirSync(folderPath, { recursive: true });
     }
 
-    async deleteFilesMatchingPattern(folderPath: string, pattern: RegExp): Promise<void> {
+    async deleteFilesMatchingPattern(
+        folderPath: string,
+        pattern: RegExp,
+    ): Promise<void> {
         const files = fs.readdirSync(folderPath);
-        files.forEach(file => {
+        files.forEach((file) => {
             if (pattern.test(file)) {
                 this.logger.log(`Deleting file: ${file}`, 'FileStorageService');
                 fs.unlinkSync(`${folderPath}/${file}`);

@@ -1,8 +1,8 @@
-import { IGameConfiguration } from "src/game-server/domain/entities/game-server";
+import { IGameConfiguration } from 'src/game-server/domain/entities/game-server';
 
 export enum ArkMapName {
-    TheIsland = "TheIsland_WP",
-    ScorchedEarth = "ScorchedEarth_WP",
+    TheIsland = 'TheIsland_WP',
+    ScorchedEarth = 'ScorchedEarth_WP',
 }
 
 export interface ArkMapConfigurationProps {
@@ -13,7 +13,9 @@ export interface ArkMapConfigurationProps {
     profileExtensionRegex: string;
 }
 
-export class ArkMapConfiguration implements IGameConfiguration, ArkMapConfigurationProps {
+export class ArkMapConfiguration
+    implements IGameConfiguration, ArkMapConfigurationProps
+{
     readonly serverName: string;
     readonly mapFolderName: ArkMapName;
     readonly mapDisplayName: string;

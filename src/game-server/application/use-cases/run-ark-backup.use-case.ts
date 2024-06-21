@@ -1,11 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { AppLogger } from "src/logger";
-import { ArkAscendedBackupManager } from "../services/backup-managers/ark-backup-manager";
-import { arkGameConfigs, arkGameServerConfigs } from "src/game-server/infrastructure/configurations/ark";
-import { GameServer } from "src/game-server/domain/entities/game-server";
-import { ArkMapConfiguration } from "../interfaces/ark-game-configuration.interface";
-import { FtpClient } from "src/game-server/infrastructure/ftp/ftp-client";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AppLogger } from 'src/logger';
+import { ArkAscendedBackupManager } from '../services/backup-managers/ark-backup-manager';
+import {
+    arkGameConfigs,
+    arkGameServerConfigs,
+} from 'src/game-server/infrastructure/configurations/ark';
+import { GameServer } from 'src/game-server/domain/entities/game-server';
+import { ArkMapConfiguration } from '../interfaces/ark-game-configuration.interface';
+import { FtpClient } from 'src/game-server/infrastructure/ftp/ftp-client';
 
 @Injectable()
 export class RunArkBackupUseCase {
@@ -25,8 +28,10 @@ export class RunArkBackupUseCase {
         for (const config of arkGameConfigs) {
             const ftpClient = new FtpClient(this.logger);
             try {
-                const serverConfig = { ...arkGameServerConfigs[config.serverName] };
-                serverConfig.backupsDestinationDirectory = 
+                const serverConfig = {
+                    ...arkGameServerConfigs[config.serverName],
+                };
+                serverConfig.backupsDestinationDirectory =
                     basePath + '/' + serverConfig.backupsDestinationDirectory;
                 const gameServer = new GameServer<ArkMapConfiguration>(
                     ftpClient,
@@ -37,7 +42,7 @@ export class RunArkBackupUseCase {
                 this.logger.error(
                     `Error running backup for server ${config.serverName}: ${e.message}`,
                     e.stack,
-                    'RunArkBackupUseCase'
+                    'RunArkBackupUseCase',
                 );
             }
         }

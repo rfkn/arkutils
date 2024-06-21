@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common";
-import { AppLogger } from "src/logger";
-import { FileStorageService } from "./file-storage.service";
+import { Module } from '@nestjs/common';
+import { AppLogger } from 'src/logger';
+import { FileStorageService } from './file-storage.service';
 
 @Module({
     imports: [],

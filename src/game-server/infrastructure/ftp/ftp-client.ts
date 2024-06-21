@@ -1,15 +1,16 @@
 import * as ftp from 'basic-ftp';
-import { FtpConnectionProps, IFtpService } from "src/game-server/domain/interfaces/i-ftp-service.interface";
-import { AppLogger } from "src/logger";
+import {
+    FtpConnectionProps,
+    IFtpService,
+} from 'src/game-server/domain/interfaces/i-ftp-service.interface';
+import { AppLogger } from 'src/logger';
 import { AppFileBuffer } from 'src/common/types/app-file.interface';
 import { PassThrough } from 'stream';
 
 export class FtpClient implements IFtpService {
     private client: ftp.Client;
 
-    constructor(
-        private readonly logger: AppLogger,
-    ) {
+    constructor(private readonly logger: AppLogger) {
         this.client = new ftp.Client();
     }
 
@@ -18,7 +19,10 @@ export class FtpClient implements IFtpService {
             this.client.close();
         }
         this.client = new ftp.Client();
-        this.logger.log(`Connecting to FTP server: ${connectionDetails.host}...`, 'FtpClient.connect')
+        this.logger.log(
+            `Connecting to FTP server: ${connectionDetails.host}...`,
+            'FtpClient.connect',
+        );
         await this.client.access({
             host: connectionDetails.host,
             port: connectionDetails.port,
@@ -39,13 +43,19 @@ export class FtpClient implements IFtpService {
         if (!this.client.closed) {
             return;
         }
-        this.logger.log('Recovering connection to FTP server...', 'FtpClient.recover');
+        this.logger.log(
+            'Recovering connection to FTP server...',
+            'FtpClient.recover',
+        );
         await this.client.access();
     }
 
     async disconnect(): Promise<void> {
         if (this.client.closed) {
-            this.logger.log('FTP client already disconnected', 'FtpClient.disconnect');
+            this.logger.log(
+                'FTP client already disconnected',
+                'FtpClient.disconnect',
+            );
             return;
         }
         this.client.close();
@@ -58,21 +68,30 @@ export class FtpClient implements IFtpService {
 
     async listFiles(path: string): Promise<ftp.FileInfo[]> {
         const files = await this.client.list(path);
-        const fileNames = files.map(file => file.name);
-        this.logger.log(`Listing files:\n ${JSON.stringify(fileNames, null, 2)}`, 'FtpClient.listFiles');
+        const fileNames = files.map((file) => file.name);
+        this.logger.log(
+            `Listing files:\n ${JSON.stringify(fileNames, null, 2)}`,
+            'FtpClient.listFiles',
+        );
         return files;
     }
 
-    async downloadFileToBuffer(fileName: string, filePath: string): Promise<AppFileBuffer> {
-        this.logger.log(`Downloading file: ${fileName}...`, 'FtpClient.downloadFileToBuffer');
+    async downloadFileToBuffer(
+        fileName: string,
+        filePath: string,
+    ): Promise<AppFileBuffer> {
+        this.logger.log(
+            `Downloading file: ${fileName}...`,
+            'FtpClient.downloadFileToBuffer',
+        );
 
         const stream = new PassThrough();
         const chunks: Buffer[] = [];
 
-        stream.on('data', chunk => {
+        stream.on('data', (chunk) => {
             chunks.push(chunk);
         });
-        stream.on('error', e => {
+        stream.on('error', (e) => {
             this.logger.error(e.message, 'FtpClient.downloadFileToBuffer');
             stream.destroy();
             throw e;
@@ -86,7 +105,10 @@ export class FtpClient implements IFtpService {
             throw e;
         }
 
-        this.logger.log(`Downloaded file: ${fileName}`, 'FtpClient.downloadFileToBuffer');
+        this.logger.log(
+            `Downloaded file: ${fileName}`,
+            'FtpClient.downloadFileToBuffer',
+        );
 
         return {
             name: fileName,
@@ -96,7 +118,10 @@ export class FtpClient implements IFtpService {
     }
 
     async uploadFile(path: string, buffer: AppFileBuffer): Promise<void> {
-        this.logger.log(`Uploading file: ${buffer.name}...`, 'FtpClient.uploadFile');
+        this.logger.log(
+            `Uploading file: ${buffer.name}...`,
+            'FtpClient.uploadFile',
+        );
 
         const stream = new PassThrough();
         stream.end(buffer.buffer);
@@ -109,7 +134,10 @@ export class FtpClient implements IFtpService {
             throw e;
         }
 
-        this.logger.log(`Uploaded file: ${buffer.name}`, 'FtpClient.uploadFile');
+        this.logger.log(
+            `Uploaded file: ${buffer.name}`,
+            'FtpClient.uploadFile',
+        );
     }
 
     async deleteFile(path: string): Promise<void> {
