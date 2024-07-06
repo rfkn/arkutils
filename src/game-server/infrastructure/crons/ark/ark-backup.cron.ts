@@ -12,7 +12,7 @@ export class ArkBackupCron {
         private readonly runBackupsUseCase: RunBackupUseCase,
     ) {}
 
-    @Cron('2-59/3 * * * *') // every 15 minutes offset by 2 minutes
+    @Cron('2-59/15 * * * *') // every 15 minutes offset by 2 minutes
     async handleCron() {
         this.logger.log('Running BackupCron', 'BackupCron');
         try {
