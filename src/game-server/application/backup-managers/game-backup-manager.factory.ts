@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { IGameBackupManager } from '../../domain/interfaces/i-game-backup-manager.interface';
 import { IGameConfiguration } from '../../domain/entities/game-server';
-import { GameConfigurationType } from '../types/game-configurations.type';
+import { GameConfigurationType } from '../common/types/game-configurations.type';
 import { GameName } from '../../domain/types/game-names.enum';
 import { ArkAscendedBackupManager } from './ark/ark-backup-manager';
 

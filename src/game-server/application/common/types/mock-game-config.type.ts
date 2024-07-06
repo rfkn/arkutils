@@ -1,5 +1,5 @@
-import { GameName } from '../../domain/types/game-names.enum';
-import { IGameConfiguration } from '../../domain/entities/game-server';
+import { GameName } from '../../../domain/types/game-names.enum';
+import { IGameConfiguration } from '../../../domain/entities/game-server';
 
 export class MockGameConfig implements IGameConfiguration {
     readonly gameName: GameName.Demo;

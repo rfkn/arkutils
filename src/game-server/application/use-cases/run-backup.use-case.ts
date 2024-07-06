@@ -7,7 +7,7 @@ import { IFtpService } from '../../domain/interfaces/i-ftp-service.interface';
 import {
     GameConfigurationType,
     ServerMap,
-} from '../types/game-configurations.type';
+} from '../common/types/game-configurations.type';
 import { GameBackupManagerFactory } from '../backup-managers/game-backup-manager.factory';
 
 export interface RunArkBackupProps {
@@ -48,7 +48,6 @@ export class RunBackupUseCase {
                         `Game name for server config and game config must be the same. Server config: ${serverConfig.gameName} | Game config: ${config.gameName}`,
                     );
                 }
-
                 serverConfig.backupsDestinationDirectory =
                     basePath + '/' + serverConfig.backupsDestinationDirectory;
 

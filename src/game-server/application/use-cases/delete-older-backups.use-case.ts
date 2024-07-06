@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AppLogger } from '../../../logger';
 import { IFileStorageService } from '../../../file-storage/application/file-storage-service.interface';
 import { UseCase, UseCaseSuccessResult } from '../../../common/use-case';
-import { DateStorageUtils } from '../utils/date-storage.utils';
+import { DateStorageUtils } from '../common/utils/date-storage.utils';
 
 export interface DeleteOlderBackupsPayload {
     hours: number;

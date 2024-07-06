@@ -1,6 +1,6 @@
 import { UseCase } from '../../../common/use-case';
 import { IFileStorageService } from '../../../file-storage/application/file-storage-service.interface';
-import { DateStorageUtils } from '../utils/date-storage.utils';
+import { DateStorageUtils } from '../common/utils/date-storage.utils';
 import { AppLogger } from '../../../logger';
 
 export interface CopyLatestBackupToFolderPayload {

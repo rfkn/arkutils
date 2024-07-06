@@ -1,5 +1,5 @@
-import { ArkMapConfiguration } from '../backup-managers/ark/ark-map-configuration';
-import { ServerProps } from '../../domain/entities/game-server';
+import { ArkMapConfiguration } from '../../backup-managers/ark/ark-map-configuration';
+import { ServerProps } from '../../../domain/entities/game-server';
 import { MockGameConfig } from './mock-game-config.type';
 
 /**

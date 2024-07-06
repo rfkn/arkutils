@@ -5,7 +5,7 @@ import { AppLogger } from 'src/logger';
 import { ArkMapConfiguration } from './ark-map-configuration';
 import { FileInfo } from 'basic-ftp';
 import { IFileStorageService } from '../../../../file-storage/application/file-storage-service.interface';
-import { DateStorageUtils } from '../../utils/date-storage.utils';
+import { DateStorageUtils } from '../../common/utils/date-storage.utils';
 
 export const PROFILES_SUBFOLDER = 'profiles' as const;
 
