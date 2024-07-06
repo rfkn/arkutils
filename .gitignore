@@ -40,4 +40,4 @@ LocalBackups/
 .env.production
 .env.nexus
 
-src/game-server/infrastructure/configurations/**/*.configuration.ts
+src/game-server/infrastructure/game-configs/**/*.configuration.ts

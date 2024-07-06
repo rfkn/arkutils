@@ -1,21 +1,20 @@
 import { IGameConfiguration } from 'src/game-server/domain/entities/game-server';
+import { GameName } from '../../../domain/types/game-names.enum';
 
 export enum ArkMapName {
     TheIsland = 'TheIsland_WP',
     ScorchedEarth = 'ScorchedEarth_WP',
+    TheCenter = 'TheCenter_WP',
 }
 
-export interface ArkMapConfigurationProps {
-    serverName: string;
+export type ArkMapConfigurationProps = IGameConfiguration & {
     mapFolderName: ArkMapName;
     mapDisplayName: string;
-    baseSavePath: string;
     profileExtensionRegex: string;
-}
+};
 
-export class ArkMapConfiguration
-    implements IGameConfiguration, ArkMapConfigurationProps
-{
+export class ArkMapConfiguration implements ArkMapConfigurationProps {
+    readonly gameName = GameName.Ark;
     readonly serverName: string;
     readonly mapFolderName: ArkMapName;
     readonly mapDisplayName: string;

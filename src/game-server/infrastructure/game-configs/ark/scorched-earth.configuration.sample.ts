@@ -1,10 +1,12 @@
 import {
     ArkMapConfiguration,
     ArkMapName,
-} from 'src/game-server/application/interfaces/ark-game-configuration.interface';
-import { GameServerProps } from 'src/game-server/domain/entities/game-server';
+} from '../../../application/backup-managers/ark/ark-map-configuration';
+import { ServerProps } from 'src/game-server/domain/entities/game-server';
+import { GameName } from '../../../domain/types/game-names.enum';
 
 const ScorchedEarthConfiguration = new ArkMapConfiguration({
+    gameName: GameName.Ark,
     serverName: 'My Ark Server',
     mapFolderName: ArkMapName.ScorchedEarth,
     mapDisplayName: 'Scorched Earth',
@@ -13,7 +15,7 @@ const ScorchedEarthConfiguration = new ArkMapConfiguration({
         '.arkprofile|.profilebak|.arktribe|.arktribebak|.arktributetribe|.formertribeownerlog',
 });
 
-export const ScorchedEarthServerConfiguration: GameServerProps<ArkMapConfiguration> =
+export const ScorchedEarthServerConfiguration: ServerProps<ArkMapConfiguration> =
     {
         backupsDestinationDirectory: 'Scorched_Earth',
         connectionDetails: {
@@ -23,5 +25,5 @@ export const ScorchedEarthServerConfiguration: GameServerProps<ArkMapConfigurati
             password: 'test1234',
         },
         gameConfiguration: ScorchedEarthConfiguration,
-        gameName: 'Ark Ascended',
+        gameName: GameName.Ark,
     };

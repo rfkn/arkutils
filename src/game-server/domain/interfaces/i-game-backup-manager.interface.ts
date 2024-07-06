@@ -7,4 +7,9 @@ export interface IGameBackupManager<T extends IGameConfiguration> {
         config: T,
         backupsDestinationDirectory: string,
     ): Promise<void>;
+    // restoreFromBackup(
+    //     ftpService: IFtpService,
+    //     config: T,
+    //     toDirectory
+    // )
 }

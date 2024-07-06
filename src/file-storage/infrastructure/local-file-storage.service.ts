@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { AppFileBuffer } from '../common/types/app-file.interface';
+import { AppFileBuffer } from '../../common/types/app-file.interface';
 import * as fs from 'fs';
 import { AppLogger } from 'src/logger';
+import { IFileStorageService } from '../application/file-storage-service.interface';
 
 @Injectable()
-export class FileStorageService {
+export class LocalFileStorageService implements IFileStorageService {
     constructor(private readonly logger: AppLogger) {}
 
     async saveFileBufferToFile(file: AppFileBuffer, backupFolder: string) {
@@ -45,9 +46,10 @@ export class FileStorageService {
             'FileStorageService',
         );
         fs.mkdirSync(destination, { recursive: true });
-        fs.readdirSync(source, { withFileTypes: true }).forEach((dirent) => {
+        const dirs = fs.readdirSync(source, { withFileTypes: true });
+        for (const dirent of dirs) {
             if (dirent.isDirectory()) {
-                this.copyFolder(
+                await this.copyFolder(
                     `${source}/${dirent.name}`,
                     `${destination}/${dirent.name}`,
                 );
@@ -57,12 +59,12 @@ export class FileStorageService {
                     `${destination}/${dirent.name}`,
                 );
             }
-        });
+        }
     }
 
     async deleteFolder(folderPath: string): Promise<void> {
         this.logger.log(`Deleting folder: ${folderPath}`, 'FileStorageService');
-        fs.rmdirSync(folderPath, { recursive: true });
+        fs.rmSync(folderPath, { recursive: true });
     }
 
     async deleteFilesMatchingPattern(

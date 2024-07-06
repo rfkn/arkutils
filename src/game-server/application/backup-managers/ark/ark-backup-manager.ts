@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { FileStorageService } from 'src/file-storage/file-storage.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { IFtpService } from 'src/game-server/domain/interfaces/i-ftp-service.interface';
 import { IGameBackupManager } from 'src/game-server/domain/interfaces/i-game-backup-manager.interface';
 import { AppLogger } from 'src/logger';
-import { ArkMapConfiguration } from '../../interfaces/ark-game-configuration.interface';
+import { ArkMapConfiguration } from './ark-map-configuration';
 import { FileInfo } from 'basic-ftp';
+import { IFileStorageService } from '../../../../file-storage/application/file-storage-service.interface';
+import { DateStorageUtils } from '../../utils/date-storage.utils';
+
+export const PROFILES_SUBFOLDER = 'profiles' as const;
 
 @Injectable()
 export class ArkAscendedBackupManager
@@ -12,7 +15,8 @@ export class ArkAscendedBackupManager
 {
     constructor(
         private readonly logger: AppLogger,
-        private readonly fileStorageService: FileStorageService,
+        @Inject(IFileStorageService)
+        private readonly fileStorageService: IFileStorageService,
     ) {}
 
     async runBackup(
@@ -21,10 +25,7 @@ export class ArkAscendedBackupManager
         backupsDestinationDir: string,
         maxRetries: number = 3,
     ): Promise<void> {
-        const timestamp = new Date()
-            .toISOString()
-            .replaceAll(':', '.')
-            .replace('T', '_');
+        const timestamp = DateStorageUtils.getDateAsFolderName();
         try {
             await this.tryBackup(
                 ftpService,
@@ -94,7 +95,8 @@ export class ArkAscendedBackupManager
         ).filter((file) => file.name.match('.ark.gz'));
 
         try {
-            const mostRecentBackup = this.getMostRecentFile(backupsList);
+            const mostRecentBackup =
+                DateStorageUtils.getMostRecentFile(backupsList);
 
             this.logger.log(
                 `Downloading most recent backup: ${mostRecentBackup.name}...`,
@@ -112,7 +114,13 @@ export class ArkAscendedBackupManager
                 `Most recent backup downloaded: ${mostRecentBackup.name}`,
                 'ArkAscendedBackupManager.runBackup',
             );
-        } catch (e) {}
+        } catch (e) {
+            this.logger.error(
+                `Error downloading most recent backup file: ${e}. Continuing execution`,
+                e.stack,
+                'ArkAscendedBackupManager.tryBackup',
+            );
+        }
 
         this.logger.log(
             `Downloading current game state file...`,
@@ -187,7 +195,7 @@ export class ArkAscendedBackupManager
             );
             await this.fileStorageService.saveFileBufferToFile(
                 fileContent,
-                `${backupsDestinationDir}/${config.mapFolderName}/profiles/${timestamp}`,
+                `${backupsDestinationDir}/${config.mapFolderName}/${PROFILES_SUBFOLDER}/${timestamp}`,
             );
         }
     }
@@ -209,45 +217,5 @@ export class ArkAscendedBackupManager
             fileContent,
             `${backupsDestinationDir}/${config.mapFolderName}/${timestamp}`,
         );
-    }
-
-    private parseDateFromFile(file: FileInfo): Date {
-        const datePattern = /\d{2}\.\d{2}\.\d{4}_\d{2}\.\d{2}\.\d{2}/;
-        const dateMatch = file.name.match(datePattern);
-        if (!dateMatch) {
-            throw new Error(`Invalid filename: ${file.name}`);
-        }
-        const [day, month, year, hours, minutes, seconds] = dateMatch[0]
-            .split(/[._]/)
-            .map(Number);
-        return new Date(year, month - 1, day, hours, minutes, seconds);
-    }
-
-    private getMostRecentFile(files: FileInfo[]): FileInfo {
-        const mostRecentFile = files.reduce(
-            (mostRecent, file) => {
-                const fileDate = this.parseDateFromFile(file);
-                if (
-                    !mostRecent ||
-                    fileDate > this.parseDateFromFile(mostRecent)
-                ) {
-                    return file;
-                } else {
-                    return mostRecent;
-                }
-            },
-            null as FileInfo | null,
-        );
-
-        if (!mostRecentFile) {
-            const fileNames = files.map((file) => file.name);
-            this.logger.error(
-                `No most recent backup file found in file list: ${JSON.stringify(fileNames, null, 2)}`,
-                'ArkAscendedBackupManager.getMostRecentFile',
-            );
-            throw new Error('No most recent backup file found');
-        }
-
-        return mostRecentFile;
     }
 }

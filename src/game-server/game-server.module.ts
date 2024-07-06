@@ -1,28 +1,26 @@
 import { Module } from '@nestjs/common';
 import { AppLogger } from 'src/logger';
 import { FileStorageModule } from 'src/file-storage/file-storage.module';
+import { ArkBackupCron } from './infrastructure/crons/ark/ark-backup.cron';
+import { RotateArkBackupsCron } from './infrastructure/crons/ark/rotate-ark-backups.cron';
 import GameServerUseCases from './application/use-cases';
-import { RunArkBackupUseCase } from './application/use-cases/run-ark-backup.use-case';
-import { ArkAscendedBackupManager } from './application/services/backup-managers/ark-backup-manager';
-import { BackupCron } from './infrastructure/crons/backup.cron';
-import { RotateBackupsCron } from './infrastructure/crons/rotate-backups.cron';
-import { BackupsRotationService } from './infrastructure/services/backups-rotation.service';
+import { BackupManagers } from './application/backup-managers/game-backup-manager.factory';
+import { HttpApiController } from './infrastructure/http-api/http-api.controller';
 
 @Module({
     imports: [FileStorageModule],
-    controllers: [],
+    controllers: [HttpApiController],
     providers: [
         AppLogger,
 
         // Application
-        ArkAscendedBackupManager,
         ...GameServerUseCases,
+        ...BackupManagers,
 
         // Infrastructure
-        BackupCron,
-        RotateBackupsCron,
-        BackupsRotationService,
+        ArkBackupCron,
+        RotateArkBackupsCron,
     ],
-    exports: [RunArkBackupUseCase],
+    exports: [...GameServerUseCases],
 })
 export class GameServerModule {}

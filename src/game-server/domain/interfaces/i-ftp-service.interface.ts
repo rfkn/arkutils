@@ -8,6 +8,7 @@ export interface FtpConnectionProps {
     password: string;
 }
 
+// todo - more generalized storage interface to support S3, etc later
 export interface IFtpService {
     connect(connectionDetails: FtpConnectionProps): Promise<void>;
     reconnect(connectionDetails: FtpConnectionProps): Promise<void>;

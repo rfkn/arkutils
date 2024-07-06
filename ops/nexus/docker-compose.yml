@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+
+  arkutils:
+    build:
+      context: ../../
+      dockerfile: ops/nexus/nest/Dockerfile
+    container_name: arkutils
+    restart:
+      unless-stopped
+    ports:
+      - 3005:3005
+    environment:
+      - PORT=3000
+      - NODE_ENV=nexus
+      - LOCAL_BACKUPS_PATH=/app/LocalBackups
+    command: node dist/main.js
+    volumes:
+      - /var/log/arkutils/nest:/var/log/nest
+      - /mnt/nvme/arksa/ShooterGame/Saved/SavedArks:/app/LocalBackups
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"

@@ -3,24 +3,25 @@ import {
     IFtpService,
 } from '../interfaces/i-ftp-service.interface';
 import { IGameBackupManager } from '../interfaces/i-game-backup-manager.interface';
-
-export const SAVE_PATH = 'arksa/ShooterGame/Saved/SavedArks';
+import { GameName } from '../types/game-names.enum';
 
 export interface IGameConfiguration {
+    gameName: GameName;
     serverName: string;
+    baseSavePath: string;
 }
 
-export interface GameServerProps<T extends IGameConfiguration> {
-    gameName: string;
+export interface ServerProps<T extends IGameConfiguration> {
+    gameName: T['gameName'];
     connectionDetails: FtpConnectionProps;
     gameConfiguration: T;
     backupsDestinationDirectory: string;
 }
 
 export class GameServer<T extends IGameConfiguration>
-    implements GameServerProps<T>
+    implements ServerProps<T>
 {
-    readonly gameName: string;
+    readonly gameName: T['gameName'];
     readonly gameConfiguration: T;
     readonly backupsDestinationDirectory: string;
     private _connectionDetails: FtpConnectionProps;
@@ -32,7 +33,7 @@ export class GameServer<T extends IGameConfiguration>
             connectionDetails,
             gameConfiguration,
             backupsDestinationDirectory,
-        }: GameServerProps<T>,
+        }: ServerProps<T>,
     ) {
         this.gameName = gameName;
         this.gameConfiguration = gameConfiguration;
@@ -42,11 +43,11 @@ export class GameServer<T extends IGameConfiguration>
 
     set connectionDetails(connectionDetails: FtpConnectionProps) {
         this.ftpService.disconnect();
-        this._connectionDetails = connectionDetails;
+        this._connectionDetails = structuredClone(connectionDetails);
     }
 
     get connectionDetails(): FtpConnectionProps {
-        return this._connectionDetails;
+        return structuredClone(this._connectionDetails);
     }
 
     async runBackup(backupManager: IGameBackupManager<T>): Promise<void> {
