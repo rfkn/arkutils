@@ -2,6 +2,7 @@ import { UseCase } from '../../../common/use-case';
 import { IFileStorageService } from '../../../file-storage/application/file-storage-service.interface';
 import { DateStorageUtils } from '../common/utils/date-storage.utils';
 import { AppLogger } from '../../../logger';
+import { Inject } from '@nestjs/common';
 
 export interface CopyLatestBackupToFolderPayload {
     fromBackupsDir: string;
@@ -12,6 +13,7 @@ export class CopyLatestBackupToFolderUseCase
     implements UseCase<CopyLatestBackupToFolderPayload>
 {
     constructor(
+        @Inject(IFileStorageService)
         private readonly fileStorageService: IFileStorageService,
         private readonly logger: AppLogger,
     ) {}
